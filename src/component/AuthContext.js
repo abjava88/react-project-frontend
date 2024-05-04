@@ -1,6 +1,6 @@
 // AuthContext.js
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -13,9 +13,9 @@ export const AuthProvider = ({ children }) => {
 
   // Load user and token from local storage on initial render
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-    
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
     if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
       setToken(storedToken);
@@ -25,17 +25,20 @@ export const AuthProvider = ({ children }) => {
   // Update local storage whenever user or token changes
   useEffect(() => {
     if (user && token) {
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('token', token);
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
     } else {
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
     }
   }, [user, token]);
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/login', { email, password });
+      const response = await axios.post("http://localhost:5000/api/login", {
+        email,
+        password,
+      });
       const { token, user } = response.data;
       setUser(user);
       setToken(token);
@@ -47,21 +50,51 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const getDashboardData = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/dashboard", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      setErrors(error.response.data);
+    }
+  };
+
+  const getAdminData = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/admin", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      setErrors(error.response.data);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
   };
 
   const isAdmin = () => {
-    return token && user && user.role === 'admin';
+    return token && user && user.role === "admin";
   };
 
   const isAuthenticated = () => {
     return token && token !== null;
-  }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, token, errors, login, logout, isAdmin, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{ user, token, errors, login, logout, isAdmin, isAuthenticated, getAdminData, getDashboardData }}
+    >
       {children}
     </AuthContext.Provider>
   );

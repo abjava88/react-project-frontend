@@ -10,8 +10,8 @@ import ProtectedRoute from "./component/ProtectedRoute";
 import AdminRoute from "./component/AdminRoute";
 import styled from "styled-components";
 import Navbar from "./component/Navbar";
-import LoginForm1 from "./component/LoginForm1";
 import HomePage from "./component/HomePage";
+import LoginForm from "./component/LoginForm";
 
 const AppContainer = styled.div`
   text-align: center;
@@ -24,7 +24,7 @@ const App = () => {
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginForm1 />} />
+          <Route path="/login" element={<LoginForm />} />
           <Route path="/dashboard" element={<ProtectedRoute />} />
           <Route path="/admin" element={<AdminRoute />} />
         </Routes>
